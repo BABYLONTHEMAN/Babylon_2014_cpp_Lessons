@@ -1,0 +1,2 @@
+	
+PlaySound("C:\\SOUNDS\\BELLS.WAV", NULL, SND_ASYNC);
