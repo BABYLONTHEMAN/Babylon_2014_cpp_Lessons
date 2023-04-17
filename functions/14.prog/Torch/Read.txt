@@ -1,0 +1,1 @@
+this is CURl project that opens tabs and search for stuff in terminal, for developing it, read the other text file by the name of, Neo.txt , contains more code and Ideas.

@@ -1,0 +1,103 @@
+you can use a library like Selenium to control the Chrome browser programmatically and perform various actions, including searching and navigating to different web pages.
+
+Here's an example C++ code snippet using Selenium and the Chrome driver to open a new tab, navigate to a website, search for a term, and close the tab:
+
+**********************************************************************************************************************************
+#include <iostream>
+#include <string>
+#include <chrono>
+#include <thread>
+
+#include <cppwebdriver/cppwebdriver.h>
+
+int main() {
+  // Create a new ChromeDriver instance
+  cppwebdriver::CppWebDriver driver("chrome");
+
+  // Open a new tab
+  driver.Get("about:blank");
+
+  // Navigate to a website
+  driver.Get("https://www.google.com");
+
+  // Find the search box and enter a search term
+  cppwebdriver::WebElement search_box = driver.FindElement(cppwebdriver::By::Name("q"));
+  search_box.SendKeys("Hello World");
+  search_box.Submit();
+
+  // Wait for the search results to load
+  std::this_thread::sleep_for(std::chrono::seconds(5));
+
+  // Close the tab
+  driver.Close();
+
+  return 0;
+}
+**********************************************************************************************************************************
+ you can use the libcurl library in C++ to perform HTTP requests, including opening a new tab in Google Chrome and searching for a term.
+
+Here's an example code snippet that uses libcurl to send a POST request to the Chrome DevTools API to create a new tab, navigate to a website, search for a term, and close the tab:
+
+#include <curl/curl.h>
+#include <string>
+
+int main() {
+  // Initialize libcurl
+  curl_global_init(CURL_GLOBAL_ALL);
+
+  // Create a new libcurl easy handle
+  CURL* curl = curl_easy_init();
+
+  // Set the Chrome DevTools API URL to connect to
+  curl_easy_setopt(curl, CURLOPT_URL, "http://localhost:9222/json");
+
+  // Set the request method to POST
+  curl_easy_setopt(curl, CURLOPT_POST, 1L);
+
+  // Set the request body to create a new tab and navigate to a website
+  std::string request_body = "{\"id\":0,\"method\":\"Target.createTarget\",\"params\":{\"url\":\"https://www.google.com\",\"newWindow\":true}}";
+  curl_easy_setopt(curl, CURLOPT_POSTFIELDS, request_body.c_str());
+
+  // Send the request and get the response
+  CURLcode res = curl_easy_perform(curl);
+
+  // Check if the request was successful
+  if (res != CURLE_OK) {
+    fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+  } else {
+    // Get the Chrome DevTools WebSocket URL from the response
+    std::string response_body;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CONTENT_LENGTH_DOWNLOAD_T, &response_body);
+    std::string::size_type start = response_body.find("\"webSocketDebuggerUrl\":\"");
+    std::string::size_type end = response_body.find("\"", start + 23);
+    std::string ws_url = response_body.substr(start + 23, end - start - 23);
+
+    // Create a new libcurl easy handle to connect to the Chrome DevTools WebSocket
+    CURL* ws_curl = curl_easy_init();
+
+    // Set the WebSocket URL to connect to
+    curl_easy_setopt(ws_curl, CURLOPT_URL, ws_url.c_str());
+
+    // Perform a WebSocket handshake
+    struct curl_slist* headers = NULL;
+    headers = curl_slist_append(headers, "Upgrade: websocket");
+    headers = curl_slist_append(headers, "Connection: Upgrade");
+    headers = curl_slist_append(headers, "Sec-WebSocket-Version: 13");
+    headers = curl_slist_append(headers, "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==");
+    curl_easy_setopt(ws_curl, CURLOPT_HTTPHEADER, headers);
+    res = curl_easy_perform(ws_curl);
+
+    // Send a message to search for a term in the new tab
+    std::string search_message = "{\"id\":1,\"method\":\"Runtime.evaluate\",\"params\":{\"expression\":\"document.querySelector(\\\"[name='q']\\\").value=\\\"Hello World\\\";document.querySelector(\\\"[name='btnK']\\\").click();\"}}";
+    curl_easy_setopt(ws_curl, CURLOPT_POSTFIELDSIZE_LARGE, (curl_off_t)search_message.length());
+    curl_easy_setopt(ws_curl, CURLOPT_POSTFIELDS, search_message.c_str());
+    res = curl_easy_perform(ws_curl);
+
+    // Wait for the search results to load
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+
+    // Send a message to close the tab
+    std::string close_message = "{\"id\":2,\"method\":\"Target.closeTarget\",\"params\":{\"targetId\":\"targetId
+    .....
+
+*********************************************************************************************************************************************
