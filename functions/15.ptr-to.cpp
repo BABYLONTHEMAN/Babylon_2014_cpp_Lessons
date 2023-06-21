@@ -25,7 +25,7 @@ public:
 int main()
 {
     Sleep(1000);
-    system("color 8E");
+    system("color 5E");
 
     Vote x;
     x.getData();
@@ -35,7 +35,7 @@ int main()
     cout << "x.getData()" << endl;
     x.showData();
 
-    system("color 8E");
+    system("color 2E");
     Sleep(1000);
 
     cout << endl << "Vote l\nVote* ptr = &l\nptr->getData()\nptr->showData()" << endl;
@@ -55,7 +55,5 @@ int main()
     cout << endl << "x.code" << endl;
     Sleep(1000);
     cout << x.code;
-
-
     return 0;
 }
